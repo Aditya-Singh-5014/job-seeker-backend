@@ -1,12 +1,22 @@
-// routes/authRoutes.js
+// backend/routes/authRoutes.js
 const express = require("express");
-// const { signup, login } = require("../controllers/auth/jobseekerAuth");
-
-const { signup, login } = require("../controllers/auth/jobseekerAuth");
 const router = express.Router();
+const {
+  registerJobSeeker,
+  loginJobSeeker,
+} = require("../controllers/auth/jobseekerauth");
+const {
+  getProfile,
+  updateProfile,
+} = require("../controllers/profile/jobSeekerProfileController");
+const { protect } = require("../middlewares/authMiddleware");
 
-// Job Seeker Routes
-router.post("/jobseeker/signup", signup);
-router.post("/jobseeker/login", login);
+// Authentication Routes
+router.post("/jobseeker/signup", registerJobSeeker);
+router.post("/jobseeker/login", loginJobSeeker);
+
+// Profile Routes (Protected)
+router.get("/jobseeker/profile", protect, getProfile);
+router.put("/jobseeker/profile", protect, updateProfile);
 
 module.exports = router;

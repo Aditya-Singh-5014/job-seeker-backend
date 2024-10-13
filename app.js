@@ -1,4 +1,4 @@
-// app.js
+// backend/app.js
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
@@ -14,6 +14,12 @@ app.use(cors());
 
 // Routes
 app.use("/api", authRoutes);
+
+// Error Handling Middleware (Optional)
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send("Something broke!");
+});
 
 // Start the server
 const PORT = process.env.PORT || 5000;
