@@ -1,0 +1,55 @@
+// authcontroller/jobseekerAuth.js
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const JobSeeker = require("../../models/jobSeekerModel");
+
+// authcontroller/jobseekerAuth.js (Signup)
+exports.signup = (req, res) => {
+  const { name, username, email, phone, password } = req.body;
+
+  JobSeeker.findByUsername(username, (err, result) => {
+    if (result.length > 0) {
+      return res.status(400).json({ message: "Username already exists" });
+    }
+
+    const hashedPassword = bcrypt.hashSync(password, 10);
+    JobSeeker.create(
+      { name, username, email, phone, password: hashedPassword },
+      (err, result) => {
+        if (err)
+          return res.status(500).json({ message: "Error creating user" });
+
+        const token = jwt.sign({ username }, process.env.JWT_SECRET, {
+          expiresIn: "1h",
+        });
+        return res
+          .status(201)
+          .json({ message: "Signup successful", username, token });
+      }
+    );
+  });
+};
+
+// authcontroller/jobseekerAuth.js (Login)
+exports.login = (req, res) => {
+  const { username, password } = req.body;
+
+  JobSeeker.findByUsername(username, (err, result) => {
+    if (result.length === 0) {
+      return res.status(400).json({ message: "User not found" });
+    }
+
+    const user = result[0];
+    const isPasswordValid = bcrypt.compareSync(password, user.password);
+    if (!isPasswordValid) {
+      return res.status(400).json({ message: "Invalid password" });
+    }
+
+    const token = jwt.sign({ username }, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
+    return res
+      .status(200)
+      .json({ message: "Login successful", username, token });
+  });
+};
