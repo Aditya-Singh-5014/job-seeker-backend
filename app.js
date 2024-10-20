@@ -3,6 +3,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const authRoutes = require("./routes/authRoutes");
+const recruiterRoutes = require("./routes/recruiterRoutes");
 require("dotenv").config();
 const db = require("./config/dbConfig");
 
@@ -14,6 +15,7 @@ app.use(cors());
 
 // Routes
 app.use("/api", authRoutes);
+app.use("/api", recruiterRoutes);
 
 // Error Handling Middleware (Optional)
 app.use((err, req, res, next) => {
